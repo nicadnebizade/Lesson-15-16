@@ -1,0 +1,171 @@
+using System;
+using System.Collections.Generic;
+
+public class Operation
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string ProcessName { get; set; }
+    public DateTime DateTime { get; set; } = DateTime.Now;
+}
+
+public class Client
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; }
+    public string Surname { get; set; }
+    public int Age { get; set; }
+    public string LiveAddress { get; set; }
+    public string WorkAddress { get; set; }
+    public decimal Salary { get; set; }
+}
+
+public class Bank
+{
+    public string Name { get; set; }
+    public decimal Budget { get; set; }
+    public decimal Profit { get; set; }
+    public CEO CEO { get; set; }
+    public List<Worker> Workers { get; set; } = new List<Worker>();
+    public List<Manager> Managers { get; set; } = new List<Manager>();
+    public List<Client> Clients { get; set; } = new List<Client>();
+    public List<Credit> Credits { get; set; } = new List<Credit>();
+
+    public void PayCredit(Client client, decimal money)
+    {
+        foreach (var credit in Credits)
+        {
+            if (credit.Client.Id == client.Id)
+            {
+                credit.Payment(money);
+                Budget += money;
+                return;
+            }
+        }
+    }
+
+    public void CalculateProfit()
+    {
+        decimal totalFromCredits = 0;
+        foreach (var credit in Credits)
+        {
+            totalFromCredits += credit.CalculatePercent();
+        }
+        Profit = totalFromCredits;
+        Console.WriteLine($"Cari gelir: {Profit}");
+    }
+
+    public void ShowAllCredit()
+    {
+        foreach (var credit in Credits)
+        {
+            Console.WriteLine($"Musteri: {credit.Client.Name} {credit.Client.Surname}, Mebleg: {credit.Amount}, Ay: {credit.Months}");
+        }
+    }
+
+    public void ShowClientCredit(string fullName)
+    {
+        foreach (var credit in Credits)
+        {
+            string clientFullName = $"{credit.Client.Name} {credit.Client.Surname}";
+            if (clientFullName.Equals(fullName, StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine($"Musteri: {clientFullName}, Kredit meblegi: {credit.Amount}");
+                return;
+            }
+        }
+        Console.WriteLine("Bu musteri ucun kredit tapilmadi.");
+    }
+}
+
+public class CEO
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; }
+    public string Surname { get; set; }
+    public int Age { get; set; }
+    public string Position { get; set; }
+    public decimal Salary { get; set; }
+
+    public void MakeMeeting()
+    {
+        Console.WriteLine($"{Name} {Surname} iclas kecirir.");
+    }
+
+    public void Control()
+    {
+        Console.WriteLine($"{Name} {Surname} nezaret edir.");
+    }
+
+    public void DecreasePercentage(double percent)
+    {
+        Console.WriteLine($"Faiz {percent}% azaldildi.");
+    }
+
+    public void Organize()
+    {
+        Console.WriteLine($"{Name} {Surname} teskil edir.");
+    }
+}
+
+public class Credit
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Client Client { get; set; }
+    public decimal Amount { get; set; }
+    public double Percent { get; set; }
+    public int Months { get; set; }
+
+    public void Payment(decimal money)
+    {
+        Amount -= money;
+        Console.WriteLine($"{money} odenildi. Qalan mebleg: {Amount}");
+    }
+
+    public decimal CalculatePercent()
+    {
+        return Amount * (decimal)(Percent / 100);
+    }
+}
+
+public class Worker
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; }
+    public string Surname { get; set; }
+    public int Age { get; set; }
+    public string Position { get; set; }
+    public decimal Salary { get; set; }
+    public TimeSpan StartTime { get; set; }
+    public TimeSpan EndTime { get; set; }
+    public List<Operation> Operations { get; set; } = new List<Operation>();
+
+    public void AddOperation(Operation operation)
+    {
+        Operations.Add(operation);
+    }
+}
+
+public class Manager
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; }
+    public string Surname { get; set; }
+    public int Age { get; set; }
+    public string Position { get; set; }
+    public decimal Salary { get; set; }
+
+    public void CalculateSalaries(List<Worker> workers)
+    {
+        decimal total = 0;
+        foreach (var worker in workers)
+        {
+            total += worker.Salary;
+        }
+        Console.WriteLine($"Umumi isci maaslari: {total}");
+    }
+
+    public void Organize()
+    {
+        Console.WriteLine($"{Name} {Surname} menecer tapsiriqlarini teskil edir.");
+    }
+}
